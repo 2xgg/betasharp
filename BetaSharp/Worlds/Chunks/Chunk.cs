@@ -160,6 +160,34 @@ public class Chunk
 
     public virtual void PopulateBlockLight() { }
 
+    public void RepairBorderLighting(int neighborChunkX, int neighborChunkZ)
+    {
+        int dx = neighborChunkX - X;
+        int dz = neighborChunkZ - Z;
+
+        if (dx == -1)
+        {
+            for (int localZ = 0; localZ < 16; ++localZ)
+                LightGaps(0, localZ);
+        }
+        else if (dx == 1)
+        {
+            for (int localZ = 0; localZ < 16; ++localZ)
+                LightGaps(15, localZ);
+        }
+
+        if (dz == -1)
+        {
+            for (int localX = 0; localX < 16; ++localX)
+                LightGaps(localX, 0);
+        }
+        else if (dz == 1)
+        {
+            for (int localX = 0; localX < 16; ++localX)
+                LightGaps(localX, 15);
+        }
+    }
+
     private void LightGaps(int localX, int localZ)
     {
         int height = GetHeight(localX, localZ);
@@ -174,6 +202,11 @@ public class Chunk
 
     private void LightGap(int worldX, int worldZ, int height)
     {
+        if (!World.ChunkHost.HasChunk(worldX >> 4, worldZ >> 4))
+        {
+            return;
+        }
+
         int topY = World.Reader.GetTopY(worldX, worldZ);
         if (topY > height)
         {

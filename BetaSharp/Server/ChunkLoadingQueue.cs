@@ -7,8 +7,7 @@ internal class ChunkLoadingQueue(ChunkMap chunkMap)
 {
     private readonly ChunkMap _chunkMap = chunkMap;
     private readonly Dictionary<long, PendingChunk> _pendingChunks = [];
-    //TODO: MAKE THIS CONFIGURABLE
-    private const int MAX_CHUNKS_PER_TICK = 5;
+    private const int MAX_CHUNKS_PER_TICK = 10;
     private long _nextSequence;
 
     public void Add(int x, int z, ServerPlayerEntity player)

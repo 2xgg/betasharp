@@ -197,7 +197,7 @@ public class LightingEngine : ILightProvider
         ++_lightingUpdatesCounter;
         try
         {
-            int updatesBudget = 500;
+            int updatesBudget = 1500;
 
             while (_lightingQueue.Count > 0)
             {

@@ -625,7 +625,10 @@ public partial class BetaSharp :
                     {
                         using (Profiler.Begin("UpdateLighting"))
                         {
-                            World.Lighting.DoLightingUpdates();
+                            var lightSw = Stopwatch.StartNew();
+                            while (lightSw.ElapsedMilliseconds < 5L && World.Lighting.DoLightingUpdates())
+                            {
+                            }
                         }
                     }
 

@@ -474,6 +474,23 @@ public abstract class BetaSharpServer : ICommandOutput
 
         connections?.Tick();
         playerManager.updateAllChunks();
+
+        // Drain lighting queued by newly loaded/decorated chunks before sending
+        // chunk data to clients, so they never receive stale sky/block light.
+        // PacketPete : maybe we can start to leave comments in dev and maybe remove them in prod code? <3
+        // This helps me debug issues later :p
+        for (int i = 0; i < worlds.Length; i++)
+        {
+            if (i == 0 || config.GetAllowNether(true))
+            {
+                ServerWorld world = worlds[i];
+                var lightSw = Stopwatch.StartNew();
+                while (lightSw.ElapsedMilliseconds < 15L && world.Lighting.DoLightingUpdates())
+                {
+                }
+            }
+        }
+
         playerManager.flushPendingChunkUpdates();
 
         foreach (EntityTracker t in entityTrackers)

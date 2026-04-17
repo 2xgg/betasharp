@@ -83,7 +83,7 @@ public class FluidsRenderer : IBlockRenderer
             float sinAngle = MathHelper.Sin(flowAngle) * 8.0F / 256.0F;
             float cosAngle = MathHelper.Cos(flowAngle) * 8.0F / 256.0F;
 
-            float luminance = block.getLuminance(ctx.Lighting, pos.x, pos.y, pos.z);
+            float luminance = block.getLuminance(ctx.Lighting, pos.x, pos.y + 1, pos.z);
             ctx.Tess.setColorOpaque_F(lightTop * luminance * tintR, lightTop * luminance * tintG,
                 lightTop * luminance * tintB);
 

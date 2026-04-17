@@ -71,6 +71,8 @@ public class ServerChunkCache : IChunkSource
             {
                 chunk.PopulateBlockLight();
                 chunk.Load();
+
+                RepairNeighborBorderLighting(chunkX, chunkZ);
             }
 
             if (!chunk.TerrainPopulated
@@ -191,6 +193,9 @@ public class ServerChunkCache : IChunkSource
             {
                 _generator.DecorateTerrain(source, x, z);
                 var4.MarkDirty();
+
+                while (_world.Lighting.DoLightingUpdates()) { }
+
                 _world.ChunkMap.OnChunkDecorated(x, z);
             }
         }
@@ -284,6 +289,8 @@ public class ServerChunkCache : IChunkSource
         _chunks.Add(chunk);
         chunk.PopulateBlockLight();
         chunk.Load();
+
+        RepairNeighborBorderLighting(chunkX, chunkZ);
     }
 
     // Runs the 4 decoration neighbour checks for a newly inserted chunk,
@@ -319,5 +326,31 @@ public class ServerChunkCache : IChunkSource
             && IsChunkLoaded(chunkX, chunkZ - 1)
             && IsChunkLoaded(chunkX - 1, chunkZ))
             DecorateTerrain(this, chunkX - 1, chunkZ - 1);
+    }
+
+    private void RepairNeighborBorderLighting(int chunkX, int chunkZ)
+    {
+        Chunk self = GetChunk(chunkX, chunkZ);
+        int[] dx = [-1, 1, 0, 0];
+        int[] dz = [0, 0, -1, 1];
+
+        for (int i = 0; i < 4; i++)
+        {
+            int nx = chunkX + dx[i];
+            int nz = chunkZ + dz[i];
+            if (IsChunkLoaded(nx, nz))
+            {
+                Chunk neighbor = GetChunk(nx, nz);
+                if (!neighbor.IsEmpty())
+                {
+                    neighbor.RepairBorderLighting(chunkX, chunkZ);
+                }
+
+                if (!self.IsEmpty())
+                {
+                    self.RepairBorderLighting(nx, nz);
+                }
+            }
+        }
     }
 }
